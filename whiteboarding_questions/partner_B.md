@@ -8,6 +8,8 @@ the relevant information has been presented).
 
 What are the disadvantages of adding an index to a table column in a database?
 
+Create/Update would take more time, but returns a quicker lookup time.
+
 **Answer**: Indices do have a cost. They make writes (`INSERT`s, `DELETE`s, and
 `UPDATE`s) a little more taxing because the index table must also be updated.
 
@@ -40,6 +42,55 @@ for models based on the below table (`User`, `Enrollment`, and `Course`)
 #  professor_id :integer        not null
 #  prereq_course_id :integer    not null
 ```
+
+class Enrollments
+
+  belongs_to :course,
+  primary_key: :id,
+  foreign_key: :course_id,
+  class_name: :Course
+
+  belongs_to :student,
+  primary_key: :id,
+  foreign_key: :student_id,
+  class_name: :User
+
+end
+
+class Course
+
+  has_many :enrollments,
+  primary_key: :id,
+  foreign_key: :course_id
+  class_name: :Enrollment
+
+  belongs_to :professor,
+  primary_key: :id,
+  foreign_key: :professor_id
+  class_name: :User
+
+  belongs_to :prereq_course,
+  primary_key: :id,
+  foreign_key: :prereq_course_id
+  class_name: Course
+
+end
+
+class User
+
+  has_many :enrollments,
+  primary_key: :id,
+  foreign_key: :student_id
+  class_name: :Enrollment
+
+  has_many :courses,
+  primary_key: :id,
+  foreign_key: :professor_id
+  class_name: :Course
+
+
+end
+
 
 ### Solutions
 
@@ -95,6 +146,22 @@ end
 Given all possible SQL commands order by order of query execution. (SELECT,
 DISTINCT, FROM, JOIN, WHERE, GROUP BY, HAVING, LIMIT/OFFSET, ORDER).
 
+
+
+1. FROM
+2. JOIN
+3. WHERE
+4. GROUP BY
+5. HAVING
+
+<!-- X 6. ORDER -->
+
+<!--  X 7. DISTINCT -->
+8. SELECT
+<!-- Distinct comes here -->
+<!-- Order comes here -->
+9. LIMIT/OFFSET
+
 **Answer**:
 
 1. FROM and JOINs
@@ -125,6 +192,12 @@ Write the following SQL Query:
 
 1.  In which years was the Physics prize awarded, but no Chemistry prize?
 
+SELECT yr
+FROM nobels
+GROUP BY yr
+HAVING subject = 'Physics' AND subject != 'Chemistry'
+
+
 #### Solution
 
 ```sql
@@ -133,7 +206,8 @@ SELECT DISTINCT
 FROM
     nobels
 WHERE
-    (subject = 'Physics' AND yr NOT IN (
+    (subject = 'Physics' AND yr NOT IN 
+    (
     SELECT
         yr
     FROM
@@ -149,6 +223,9 @@ WHERE
 
 What is the purpose of a database migration?
 
+A database migration creates and updates tables and their constraints.
+
+
 **Answer**: A migration is a file containing Ruby code that describes a set of
 changes to be applied to a database. It may create or drop tables as well as add
 or remove columns from a table.
@@ -157,6 +234,11 @@ or remove columns from a table.
 
 What is the difference between Database Constraints and Active Record
 Validations?
+
+DB constraints are within the DB level, they lead to bad errors that cannot be parsed.
+Validations lead to better errors.
+If two users try to create an account at the same time, validations might skip this error, but constraints would catch.
+
 
 **Answer**: **Validations** are defined inside **models**. Model-level
 validations live in the Rails world. Since we write them in Ruby, they are very
@@ -194,6 +276,51 @@ for models based on the below table (`User`, `Game`, and `Score`)
 #  name :string            not null
 #  game_maker_id :integer  not null
 ```
+
+class Score
+
+  belongs_to :user,
+  primary_key: :id,
+  foreign_key: :user_id,
+  class_name: :User
+
+  belongs_to :game,
+  primary_key: :id,
+  foreign_key: :game_id,
+  class_name: :Game
+
+end
+
+class User
+
+  has_many :scores,
+  primary_key: :id,
+  foreign_key: :user_id
+  class_name: :Score
+
+  has_many :game_makers,
+  primary_key: :id,
+  foreign_key: :game_maker_id,
+  class_name: :Game
+
+
+end
+
+class Game
+
+  has_many :scores,
+  primary_key: :id,
+  foreign_key: :game_id,
+  class_name: :Score
+
+  belongs_to :game_maker,
+  primary_key: :id,
+  foreign_key: :game_maker_id
+  class_name: User
+
+end
+
+
 
 #### Solution
 
