@@ -15,6 +15,37 @@ department.
 
 2.  Next find the name of the employees that don't belong to any department
 
+
+SELECT name
+FROM departments
+
+
+
+SELECT name
+FROM departments
+JOIN employees ON id = employee_id
+WHERE name != departments.name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #### Solution
 
 ```sql
@@ -44,9 +75,18 @@ WHERE
 
 Describe the differences between a primary key and a foreign key.
 
+
+
+
+
+
+
+
 **Answer**: A primary key uniquely identifies a record in the relational
 database table, whereas a foreign key refers to the `id` column which is the
 primary key of **another** table.
+
+
 
 ## Question Three:
 
@@ -77,6 +117,64 @@ Given the following table write all the `belongs_to` and `has_many` **and**
 #  primary_physician_id :integer
 
 ```
+
+
+class Physicican
+  has_many: physicians,
+  primary_key: :id,
+  foreign_key: :physician_id,
+  class_name: :Appointment
+  
+  has_one: primary_physician,
+  primary_key: :id, 
+  foreign_key: :primary_physician_id,
+  class_name: :Patient
+end
+
+
+class Appointment
+  <!-- has_many: appointments,
+  primary_key: id,
+  foreign_key:  -->
+
+  belongs_to: physicians,
+  primary_key: :id,
+  foreign_key: :physician_id,
+  class_name: :Physican
+
+
+  belongs_to: patients,
+  primary_key: :id, 
+  foreign_key: :patient_id,
+  class_name: :Patient
+
+end
+
+
+class Patient
+  has_many: patients,
+  primary_key: :id,
+  foreign_key: :patient_id,
+  class_name: :Appointment
+
+  belongs_to: physicians,
+  primary_key, :id, 
+  foreign_key: :primary_physician_id,
+  class_name: physician
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #### Solution
 
@@ -131,6 +229,22 @@ end
 
 Paraphrase the advantages of using an ORM (like ActiveRecord).
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 **Answer**: Using an ORM (Object Relational Model) allows you to interact with
 database information in an OOP way. An ORM like ActiveRecord will translate rows
 from your SQL tables into Ruby objects on fetch, and translates your Ruby
@@ -139,6 +253,23 @@ objects back to rows on save resulting in less overall database access code.
 ## Question Five:
 
 When are model validations run?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 **Answer**: Whenever a model instance is _updated_ or _saved_ to the database.
 
@@ -176,6 +307,33 @@ Write two SQL Queries:
 2.  Obtain a list in alphabetical order of actors who've had at least 15
     starring roles.
 
+SELECT title
+FROM movies
+JOIN castings ON movies.id = movie_id
+JOIN actors ON actors.id = actor_id
+WHERE name = "Harrison Ford" AND castings.ord != 1
+
+
+SELECT name
+FROM actors
+JOIN castings ON actor_id = actors.id
+WHERE castings.ord = 1
+GROUP BY actor_id
+HAVING COUNT(*) >= 15
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### Solution
 
 ```sql
@@ -212,6 +370,24 @@ ORDER BY
 
 Identify the difference between a `has_many through` and a `has_one`
 association?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 **Answer**: We use `has_many` when a record holds a column (the primary key)
 that is referred to by a foreign key in the associated records. `has_one` is a
